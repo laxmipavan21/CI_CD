@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="28a8e31e-5c67-481d-8acd-aa901c04d841" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="employee-apiFlow" doc:id="d55fa26c-01bc-4db8-b4ef-9d7869869f2e" >
+		<http:listener doc:name="Listener" doc:id="1f59e5af-6295-47f1-b02b-ca45562f7222" config-ref="HTTP_Listener_config" path="/employee"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d31d9ec1-9dc9-40d1-87e7-91896464bda7" message="#[payload]"/>
+		<choice doc:name="Choice" doc:id="2affb773-88b1-4c7d-94af-d359c4a828ef" >
+			<when expression="#[attributes.method == 'GET']">
+				<flow-ref doc:name="Flow Reference" doc:id="ed468479-a5ca-4cb7-807c-213844444a2f" name="getEmployees"/>
+			</when>
+			<when expression="#[attributes.method == 'POST']">
+				<logger level="INFO" doc:name="Logger" doc:id="039e5bb0-264a-4bf2-b38b-76e1a2ae9791" message="Create #"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="4f455f91-65c2-4048-931d-29bf6693a235" message='#["Non of the Operations"]'/>
+			</otherwise>
+		</choice>
+	</flow>
+	<sub-flow name="createEmployee" doc:id="b3ee5bf8-cf14-4a45-aa93-220168d85f3d" >
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="66191abe-cfcc-439c-b955-b0a37c3cc5e6" />
+	</sub-flow>
+	<sub-flow name="getEmployees" doc:id="f49870c9-6180-44a3-b8af-97f72cbf8c82" >
+		<set-payload value='#[[{"id":1,"name":"Pavan"},{"id":2,"name":"Kumar"}]]' doc:name="Set Payload" doc:id="ab4dfb87-3e21-4777-9d39-1f649f4bce53" />
+	</sub-flow>
+</mule>
